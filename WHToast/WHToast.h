@@ -40,6 +40,8 @@
          duration:(NSTimeInterval)duration
     finishHandler:(dispatch_block_t _Nullable)handler;
 
++ (void)showMessage:(NSString * _Nullable)message;
+
 /** 主动消失 */
 + (void)hide;
 

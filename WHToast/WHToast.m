@@ -98,6 +98,10 @@ static id _instance;
                                finishHandler:handler];
 }
 
++ (void)showMessage:(NSString *)message{
+    [[self sharedInstance] showToastWithType:WHToastTypeWords Message:message originY:0 image:nil finishHandler:nil];
+}
+
 + (void)hide {
     [[self sharedInstance] removeToast];
 }
@@ -203,6 +207,27 @@ static id _instance;
     }];
     [self duration:duration];
 }
+
+- (void)showToastWithType:(WHToastType)type Message:(NSString *)message originY:(CGFloat)originY image:(UIImage *)image finishHandler:(dispatch_block_t)handler {
+    [self guard];
+    self.finishHandler = handler;
+    self.toastView = [WHToastView toastWithMessage:message type:type originY:originY tipImage:image];
+    self.toastView.alpha = 0;
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    if (kToastConfig.showMask) {
+        self.maskView = [self maskViewWithColor:kToastConfig.maskColor coverNav:kToastConfig.maskCoverNav];
+        self.maskView.alpha = 0;
+        [keyWindow addSubview:self.maskView];
+        [keyWindow addSubview:self.toastView];
+    } else {
+        [keyWindow addSubview:self.toastView];
+    }
+    [UIView animateWithDuration:0.2 animations:^{
+        self.maskView.alpha = 1;
+        self.toastView.alpha = 1;
+    }];
+}
+
 
 - (void)guard {
     if (self.toastView.superview != nil || self.toastView) {
